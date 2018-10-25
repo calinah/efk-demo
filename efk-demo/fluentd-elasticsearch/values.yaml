@@ -65,23 +65,41 @@ configMaps:
       format json
       read_from_head true
     </source>
-  system.input.conf: |-
-    <source>
-      @id docker.log
-      @type tail
-      format /^time="(?<time>[^)]*)" level=(?<severity>[^ ]*) msg="(?<message>[^"]*)"( err="(?<error>[^"]*)")?( statusCode=($<status_code>\d+))?/
-      path /var/log/docker.log
-      pos_file /var/log/docker.log.pos
-      tag docker
-    </source>
-    # Example:
-    # 2016/02/04 06:52:38 filePurge: successfully removed file /var/etcd/data/member/wal/00000000000006d0-00000000010a23d1.wal
 
   output.conf: |
     # Enriches records with Kubernetes metadata
-    <filter kubernetes.**>
+    <filter raw.kubernetes.**>
       @type kubernetes_metadata
     </filter>
+
+    <filter raw.kubernetes.var.log.containers.**logs**>
+      @type parser
+      format json
+      replace_invalid_sequence true
+      emit_invalid_record_to_error true
+      suppress_parse_error_log false
+      key_name log
+      reserve_data true
+      reserve_time true
+      # hash_value_field log
+      time_key occurred
+    </filter>
+
+  <filter raw.kubernetes.var.log.containers.**logs**>
+    @type parser
+    format json
+    replace_invalid_sequence true
+    emit_invalid_record_to_error true
+    suppress_parse_error_log false
+    key_name "log"
+    reserve_data true
+    reserve_time true
+    time_key occurred
+    <parse>
+      time_key occurred
+      @type json
+    </parse>
+  </filter>
 
     # <match **>
     #     @type elasticsearch
@@ -131,7 +149,7 @@ configMaps:
         retry_max_interval 30
         chunk_limit_size "#{ENV['OUTPUT_BUFFER_CHUNK_LIMIT']}"
         queue_limit_length "#{ENV['OUTPUT_BUFFER_QUEUE_LIMIT']}"
-        overflow_action block
+        overflow_action drop_oldest_chunk
       </buffer>
     </match>
 
