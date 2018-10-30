@@ -85,21 +85,21 @@ configMaps:
       time_key occurred
     </filter>
 
-  <filter raw.kubernetes.var.log.containers.**logs**>
-    @type parser
-    format json
-    replace_invalid_sequence true
-    emit_invalid_record_to_error true
-    suppress_parse_error_log false
-    key_name "log"
-    reserve_data true
-    reserve_time true
-    time_key occurred
-    <parse>
-      time_key occurred
-      @type json
-    </parse>
-  </filter>
+    # <filter raw.kubernetes.var.log.containers.**logs**>
+    #   @type parser
+    #   format json
+    #   replace_invalid_sequence true
+    #   emit_invalid_record_to_error true
+    #   suppress_parse_error_log false
+    #   key_name "log"
+    #   reserve_data true
+    #   reserve_time true
+    #   time_key occurred
+    #   <parse>
+    #     time_key occurred
+    #     @type json
+    #   </parse>
+    # </filter>
 
     # <match **>
     #     @type elasticsearch
@@ -152,36 +152,6 @@ configMaps:
         overflow_action drop_oldest_chunk
       </buffer>
     </match>
-
-  template.json: |
-    {
-      "template": "fluentd-*",
-      "settings": {
-        "index.refresh_interval": "5s",
-        "index.number_of_shards": "3",
-        "index.routing.allocation.total_shards_per_node": "2",
-        "index.mapping.ignore_malformed": true
-      },
-      "mappings": {
-        "fluentd": {
-          "dynamic_templates": [
-            {
-              "default_no_index": {
-                "path_match": "^.*$",
-                "path_unmatch": "^(@timestamp|auditID|level|stage|requestURI|sourceIPs|metadata|objectRef|user|verb|traceId|log|message|msg|pod|kubernetes.*|vulnerabilityCount|vulnerabilityStatus|vulnerabilities.*)(\\..+)?$",
-                "match_pattern": "regex",
-                "mapping": {
-                  "index": false,
-                  "enabled": false
-                }
-              }
-            }
-          ]
-        }
-      }
-    }
-
-
 
 # extraVolumes:
 #   - name: es-certs
