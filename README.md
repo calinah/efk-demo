@@ -1,5 +1,5 @@
-# This demo uses open-source charts that have been slightly tweaked to work with each other.
-# This is a great collection of tools to use if your are just getting started with EFK
+### This demo uses open-source charts that have been slightly tweaked to work with each other.
+### This is a great collection of tools to use if your are just getting started with EFK
 
 To install run the following:
 
