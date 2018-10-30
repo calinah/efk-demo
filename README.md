@@ -27,3 +27,4 @@ Useful resources:
 * https://www.elastic.co/blog/a-heap-of-trouble
 * https://github.com/fluent/fluent-bit - lightweight version of fluentd
 * https://github.com/helm/charts/tree/master/stable/fluent-bit - fluent-bit chart
+* https://github.com/Yelp/elastalert - ElastAlert is a little python based opensource tool that pushes alerts from EFK to various alert receivers.
